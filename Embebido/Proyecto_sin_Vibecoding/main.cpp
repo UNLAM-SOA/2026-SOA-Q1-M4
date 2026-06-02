@@ -30,9 +30,9 @@
 #define WIFI_SSID "ssid"
 #define WIFI_PASSWORD "pass"
 
-// #define MQTT_BROKER "ip"
+// #define MQTT_BROKER "157.151.237.152"
 // #define MQTT_PORT 1883
-#define MQTT_BROKER "ip"
+#define MQTT_BROKER "129.80.92.190"
 #define MQTT_PORT 80
 #define USE_MQTT_AUTH true
 #define MQTT_USER "user"
@@ -197,14 +197,14 @@ void publishMqtt(const char *topic, const char *payload)
 #pragma region sensors
 float check_left_distance_sensor()
 {
-  digitalWrite(LEFT_DISTANCE_SENSOR_TRIG_PIN, LOW);
-  delayMicroseconds(2);
-  digitalWrite(LEFT_DISTANCE_SENSOR_TRIG_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(LEFT_DISTANCE_SENSOR_TRIG_PIN, LOW);
-  float duration = pulseIn(LEFT_DISTANCE_SENSOR_ECHO_PIN, HIGH, MAX_TIMEOUT_FOR_OBSTACLE_DETECTION_US);
-  float distance = duration * SPEED_OF_SOUND;
-  // float distance = random(7, 85);
+  // digitalWrite(LEFT_DISTANCE_SENSOR_TRIG_PIN, LOW);
+  // delayMicroseconds(2);
+  // digitalWrite(LEFT_DISTANCE_SENSOR_TRIG_PIN, HIGH);
+  // delayMicroseconds(10);
+  // digitalWrite(LEFT_DISTANCE_SENSOR_TRIG_PIN, LOW);
+  // float duration = pulseIn(LEFT_DISTANCE_SENSOR_ECHO_PIN, HIGH, MAX_TIMEOUT_FOR_OBSTACLE_DETECTION_US);
+  // float distance = duration * SPEED_OF_SOUND;
+  float distance = random(7, 85);
 
   last_left_distance = distance;
   return distance;
@@ -212,14 +212,14 @@ float check_left_distance_sensor()
 
 float check_right_distance_sensor()
 {
-  digitalWrite(RIGHT_DISTANCE_SENSOR_TRIG_PIN, LOW);
-  delayMicroseconds(2);
-  digitalWrite(RIGHT_DISTANCE_SENSOR_TRIG_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(RIGHT_DISTANCE_SENSOR_TRIG_PIN, LOW);
-  float duration = pulseIn(RIGHT_DISTANCE_SENSOR_ECHO_PIN, HIGH, MAX_TIMEOUT_FOR_OBSTACLE_DETECTION_US);
-  float distance = duration * SPEED_OF_SOUND;
-  // float distance = random(7, 85);
+  // digitalWrite(RIGHT_DISTANCE_SENSOR_TRIG_PIN, LOW);
+  // delayMicroseconds(2);
+  // digitalWrite(RIGHT_DISTANCE_SENSOR_TRIG_PIN, HIGH);
+  // delayMicroseconds(10);
+  // digitalWrite(RIGHT_DISTANCE_SENSOR_TRIG_PIN, LOW);
+  // float duration = pulseIn(RIGHT_DISTANCE_SENSOR_ECHO_PIN, HIGH, MAX_TIMEOUT_FOR_OBSTACLE_DETECTION_US);
+  // float distance = duration * SPEED_OF_SOUND;
+  float distance = random(7, 85);
 
   last_right_distance = distance;
   return distance;
@@ -246,8 +246,8 @@ Event check_obstacles()
 
 Event check_light()
 {
-  int light_value = analogRead(LIGHT_SENSOR_PIN);
-  // int light_value = random(0, 5000);
+  // int light_value = analogRead(LIGHT_SENSOR_PIN);
+  int light_value = random(0, 5000);
 
   last_light_value = light_value;
   return (light_value > LIGHT_THRESHOLD) ? Event::LOW_LIGHT : Event::HIGH_LIGHT;
@@ -640,7 +640,7 @@ State handleEvent(Event event)
   Transition transition = sm[static_cast<uint8_t>(current_state)][static_cast<uint8_t>(event)];
   if (transition.action)
     {
-      transition.action();
+      // transition.action();
     }
   return transition.nextState;
 }
@@ -648,21 +648,21 @@ State handleEvent(Event event)
 void setup()
 {
   Serial.begin(9600);
-  pinMode(LEFT_DISTANCE_SENSOR_TRIG_PIN, OUTPUT);
-  pinMode(LEFT_DISTANCE_SENSOR_ECHO_PIN, INPUT);
-  pinMode(RIGHT_DISTANCE_SENSOR_TRIG_PIN, OUTPUT);
-  pinMode(RIGHT_DISTANCE_SENSOR_ECHO_PIN, INPUT);
-  pinMode(LIGHT_SENSOR_PIN, INPUT);
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(L298N_LEFT_FORWARD_PIN, OUTPUT);
-  pinMode(L298N_LEFT_BACKWARD_PIN, OUTPUT);
-  pinMode(L298N_RIGHT_FORWARD_PIN, OUTPUT);
-  pinMode(L298N_RIGHT_BACKWARD_PIN, OUTPUT);
-  pinMode(L298N_LEFT_SPEED_PIN, OUTPUT);
-  pinMode(L298N_RIGHT_SPEED_PIN, OUTPUT);
+  // pinMode(LEFT_DISTANCE_SENSOR_TRIG_PIN, OUTPUT);
+  // pinMode(LEFT_DISTANCE_SENSOR_ECHO_PIN, INPUT);
+  // pinMode(RIGHT_DISTANCE_SENSOR_TRIG_PIN, OUTPUT);
+  // pinMode(RIGHT_DISTANCE_SENSOR_ECHO_PIN, INPUT);
+  // pinMode(LIGHT_SENSOR_PIN, INPUT);
+  // pinMode(LED_PIN, OUTPUT);
+  // pinMode(L298N_LEFT_FORWARD_PIN, OUTPUT);
+  // pinMode(L298N_LEFT_BACKWARD_PIN, OUTPUT);
+  // pinMode(L298N_RIGHT_FORWARD_PIN, OUTPUT);
+  // pinMode(L298N_RIGHT_BACKWARD_PIN, OUTPUT);
+  // pinMode(L298N_LEFT_SPEED_PIN, OUTPUT);
+  // pinMode(L298N_RIGHT_SPEED_PIN, OUTPUT);
 
-  analogWrite(L298N_LEFT_SPEED_PIN, MOTOR_SPEED);
-  analogWrite(L298N_RIGHT_SPEED_PIN, MOTOR_SPEED);
+  // analogWrite(L298N_LEFT_SPEED_PIN, MOTOR_SPEED);
+  // analogWrite(L298N_RIGHT_SPEED_PIN, MOTOR_SPEED);
 
   events_queue = xQueueCreate(QUEUE_SIZE, sizeof(Event));
   mqtt_messages_queue = xQueueCreate(QUEUE_SIZE, sizeof(MqttMessage));
