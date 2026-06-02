@@ -11,13 +11,24 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.appbar.MaterialToolbar
+import kotlinx.coroutines.launch
 
 class SensorActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var rotationSensor: Sensor? = null
 
     private lateinit var directionText: TextView
+    private lateinit var leftDistanceText: TextView
+    private lateinit var rightDistanceText: TextView
+    private lateinit var lightText: TextView
+
+    private val mqtt by lazy {
+        (application as CustomApplication).mqttManager
+    }
 
     companion object {
         private const val THRESHOLD = 15f
@@ -27,6 +38,10 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.sensor)
+
+        leftDistanceText = findViewById(R.id.leftDistanceText)
+        rightDistanceText = findViewById(R.id.rightDistanceText)
+        lightText = findViewById(R.id.lightText)
 
         val topBar = findViewById<MaterialToolbar>(R.id.topAppBar)
 
@@ -55,6 +70,16 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mqtt.stateFlow.collect { state ->
+                    leftDistanceText.text = "Izquierda: ${state.distanceLeft?.toString() ?: "--"}"
+                    rightDistanceText.text = "Derecha: ${state.distanceRight?.toString() ?: "--"}"
+                    lightText.text =  "Luz: ${state.light?.toString() ?: "--"}"
+                }
+            }
+        }
     }
 
     override fun onResume() {
