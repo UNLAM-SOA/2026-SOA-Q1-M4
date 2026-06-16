@@ -30,6 +30,7 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         (application as CustomApplication).mqttManager
     }
 
+    private var lastDirection = ""
     companion object {
         private const val THRESHOLD = 15f
     }
@@ -120,26 +121,32 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
 
                 absPitch < THRESHOLD &&
                         absRoll < THRESHOLD -> {
-                    "STOP"
+                    "stop"
                 }
 
                 absPitch >= absRoll -> {
 
                     when {
-                        pitch < -THRESHOLD -> "BACKWARD"
-                        pitch > THRESHOLD -> "FORWARD"
-                        else -> "STOP"
+                        pitch < -THRESHOLD -> "backward"
+                        pitch > THRESHOLD -> "forward"
+                        else -> "stop"
                     }
                 }
 
                 else -> {
 
                     when {
-                        roll > THRESHOLD -> "RIGHT"
-                        roll < -THRESHOLD -> "LEFT"
-                        else -> "STOP"
+                        roll > THRESHOLD -> "right"
+                        roll < -THRESHOLD -> "left"
+                        else -> "stop"
                     }
                 }
+            }
+
+            // Solo enviar si cambió la dirección, para no saturar MQTT
+            if (direction != lastDirection) {
+                lastDirection = direction
+                mqtt.sendCommand(direction)
             }
 
             directionText.text = direction

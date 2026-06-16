@@ -59,4 +59,5 @@ dependencies {
     implementation(libs.material)
     implementation(libs.org.eclipse.paho.client.mqttv3)
     implementation(libs.org.eclipse.paho.android.service)
+    implementation("io.github.sceneview:sceneview:2.3.1")
 }
