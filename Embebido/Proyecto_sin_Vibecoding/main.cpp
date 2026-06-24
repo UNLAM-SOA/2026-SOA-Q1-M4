@@ -30,9 +30,9 @@
 #define WIFI_SSID "ssid"
 #define WIFI_PASSWORD "pass"
 
-// #define MQTT_BROKER "ip"
+// #define MQTT_BROKER "157.151.237.152"
 // #define MQTT_PORT 1883
-#define MQTT_BROKER "ip"
+#define MQTT_BROKER "129.80.92.190"
 #define MQTT_PORT 80
 #define USE_MQTT_AUTH true
 #define MQTT_USER "user"

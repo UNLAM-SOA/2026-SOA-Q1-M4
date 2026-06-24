@@ -1,24 +1,33 @@
 package com.example.myapplication
 
-import android.content.Context
-import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.appbar.MaterialToolbar
+import kotlinx.coroutines.launch
 
 class SensorActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var rotationSensor: Sensor? = null
 
     private lateinit var directionText: TextView
+    private lateinit var leftDistanceText: TextView
+    private lateinit var rightDistanceText: TextView
+    private lateinit var lightText: TextView
 
+    private val mqtt by lazy {
+        (application as CustomApplication).mqttManager
+    }
+
+    private var lastDirection = ""
     companion object {
         private const val THRESHOLD = 15f
     }
@@ -27,6 +36,10 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.sensor)
+
+        leftDistanceText = findViewById(R.id.leftDistanceText)
+        rightDistanceText = findViewById(R.id.rightDistanceText)
+        lightText = findViewById(R.id.lightText)
 
         val topBar = findViewById<MaterialToolbar>(R.id.topAppBar)
 
@@ -47,14 +60,22 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         directionText = findViewById(R.id.txtSensorOutput)
 
         btnController.setOnClickListener {
-            startActivity(
-                Intent(this, ControllerActivity::class.java)
-            )
+            finish()
         }
 
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
 
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mqtt.stateFlow.collect { state ->
+                    leftDistanceText.text = "Izquierda: ${state.distanceLeft?.toString() ?: "--"}"
+                    rightDistanceText.text = "Derecha: ${state.distanceRight?.toString() ?: "--"}"
+                    lightText.text =  "Luz: ${state.light?.toString() ?: "--"}"
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -63,6 +84,11 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         rotationSensor?.also {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -95,26 +121,32 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
 
                 absPitch < THRESHOLD &&
                         absRoll < THRESHOLD -> {
-                    "STOP"
+                    "stop"
                 }
 
                 absPitch >= absRoll -> {
 
                     when {
-                        pitch < -THRESHOLD -> "BACKWARD"
-                        pitch > THRESHOLD -> "FORWARD"
-                        else -> "STOP"
+                        pitch < -THRESHOLD -> "backward"
+                        pitch > THRESHOLD -> "forward"
+                        else -> "stop"
                     }
                 }
 
                 else -> {
 
                     when {
-                        roll > THRESHOLD -> "RIGHT"
-                        roll < -THRESHOLD -> "LEFT"
-                        else -> "STOP"
+                        roll > THRESHOLD -> "right"
+                        roll < -THRESHOLD -> "left"
+                        else -> "stop"
                     }
                 }
+            }
+
+            // Solo enviar si cambió la dirección, para no saturar MQTT
+            if (direction != lastDirection) {
+                lastDirection = direction
+                mqtt.sendCommand(direction)
             }
 
             directionText.text = direction
