@@ -63,9 +63,7 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         directionText = findViewById(R.id.txtSensorOutput)
 
         btnController.setOnClickListener {
-            startActivity(
-                Intent(this, ControllerActivity::class.java)
-            )
+            finish()
         }
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -89,6 +87,11 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         rotationSensor?.also {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
