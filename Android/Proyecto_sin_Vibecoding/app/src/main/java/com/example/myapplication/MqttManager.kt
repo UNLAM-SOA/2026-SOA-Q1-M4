@@ -109,13 +109,4 @@ class MqttManager(
     fun sendCommand(command: String) {
         client?.publish("robot/command", MqttMessage(command.toByteArray()))
     }
-
-    val distanceLeft: Float?
-        get() = _state.value.distanceLeft
-    val distanceRight: Float?
-        get() = _state.value.distanceRight
-    val light: Int?
-        get() = _state.value.light
-    val state: String?
-        get() = _state.value.state
 }
