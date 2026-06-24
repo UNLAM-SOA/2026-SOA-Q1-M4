@@ -9,6 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttMessage
+import java.util.UUID
 
 data class RobotState(
     var distanceLeft: Float? = null,
@@ -36,7 +37,7 @@ class MqttManager(
         password: String? = null
     ) {
         this.serverUri = serverUri
-        this.clientId = MqttClient.generateClientId()
+        this.clientId = UUID.randomUUID().toString()
         this.username = username
         this.password = password
     }
@@ -50,7 +51,7 @@ class MqttManager(
 
         val options = MqttConnectOptions().apply {
             isAutomaticReconnect = true
-            isCleanSession = true
+            isCleanSession = false
         }
         options.userName = username
         options.password = password?.toCharArray()
