@@ -496,22 +496,35 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length)
   xQueueSend(events_queue, &event, portMAX_DELAY);
 }
 
+Event last_light_event = Event::STOP;
+
 void task_check_light_sensor(void *_)
 {
   while (true)
     {
       Event event = check_light();
-      xQueueSend(events_queue, &event, portMAX_DELAY);
+      if(event != last_light_event)
+        {
+          last_light_event = event;
+          xQueueSend(events_queue, &event, portMAX_DELAY);
+        }
       vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
+
+Event last_obstacle_event = Event::STOP;
 
 void task_check_obstacle_sensors(void *_)
 {
   while (true)
     {
       Event event = check_obstacles();
-      xQueueSend(events_queue, &event, portMAX_DELAY);
+      // Avoid sending the same event multiple times in a row
+        if (event != last_obstacle_event)
+        {
+            last_obstacle_event = event;
+            xQueueSend(events_queue, &event, portMAX_DELAY);
+        }
       vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
