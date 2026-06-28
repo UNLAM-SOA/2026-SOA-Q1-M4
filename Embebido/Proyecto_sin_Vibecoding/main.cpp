@@ -17,12 +17,12 @@
 #define LED_PIN 4
 
 #define SPEED_OF_SOUND 0.017                       // 0.034 cm/us / 2
-#define MOTOR_SPEED 128                            // 50% PWM
+#define MOTOR_SPEED 100                            // 50% PWM
 #define MAX_TIMEOUT_FOR_OBSTACLE_DETECTION_US 5000 // 5ms = 85cm max
-#define MAX_DISTANCE_FOR_OBSTACLE_DETECTION_CM 10
+#define MAX_DISTANCE_FOR_OBSTACLE_DETECTION_CM 30
 #define LIGHT_THRESHOLD 550
 
-#define TASK_DELAY_MS 200
+#define TASK_DELAY_MS 50
 
 #define QUEUE_SIZE 20
 #define TASK_STACK_SIZE 2048
@@ -496,23 +496,23 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length)
   xQueueSend(events_queue, &event, portMAX_DELAY);
 }
 
-const SensorFunction sensor_functions[] = { check_obstacles, check_light };
-
-constexpr size_t SENSOR_FUNCTION_COUNT = sizeof(sensor_functions) / sizeof(sensor_functions[0]);
-
-void task_sensors(void *_)
+void task_check_light_sensor(void *_)
 {
-  size_t sensor_index = 0;
-
   while (true)
     {
-      Event event = sensor_functions[sensor_index]();
-
+      Event event = check_light();
       xQueueSend(events_queue, &event, portMAX_DELAY);
+      vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
 
-      sensor_index = (sensor_index + 1) % SENSOR_FUNCTION_COUNT;
-
-      vTaskDelay(pdMS_TO_TICKS(TASK_DELAY_MS));
+void task_check_obstacle_sensors(void *_)
+{
+  while (true)
+    {
+      Event event = check_obstacles();
+      xQueueSend(events_queue, &event, portMAX_DELAY);
+      vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
 
@@ -668,7 +668,8 @@ void setup()
   mqtt_messages_queue = xQueueCreate(QUEUE_SIZE, sizeof(MqttMessage));
   xTaskCreate(connect_wifi, "WiFi Task", TASK_STACK_SIZE * 10, NULL, 1, NULL);
   xTaskCreate(mqtt_task, "MQTT Task", TASK_STACK_SIZE * 10, NULL, 1, NULL);
-  xTaskCreate(task_sensors, "Sensors Task", TASK_STACK_SIZE, NULL, 1, NULL);
+  xTaskCreate(task_check_light_sensor, "Light Sensor Task", TASK_STACK_SIZE, NULL, 1, NULL);
+  xTaskCreate(task_check_obstacle_sensors, "Obstacle Sensors Task", TASK_STACK_SIZE, NULL, 5, NULL);
   xTaskCreate(task_commands, "Commands Task", TASK_STACK_SIZE, NULL, 1, NULL);
   xTaskCreate(task_sensor_publish, "Sensor Publish Task", TASK_STACK_SIZE, NULL, 1, NULL);
 }
