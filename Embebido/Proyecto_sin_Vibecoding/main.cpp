@@ -620,6 +620,8 @@ void mqtt_task(void *_)
               mqtt_client.publish(message.topic, message.payload);
             }
         }
+
+        vTaskDelay(pdMS_TO_TICKS(300));
     }
 }
 
