@@ -110,36 +110,31 @@ class AccelerometerActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent) {
         if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-            // REMAPEO PARA LANDSCAPE (Modo Volante)
-            // En Landscape Left:
-            // values[0] (X) es el eje vertical relativo a la pantalla
-            // values[1] (Y) es el eje horizontal relativo a la pantalla
             
-            val steer = event.values[1] // Giro (Izquierda/Derecha)
-            val drive = event.values[0] // Inclinación (Adelante/Atrás)
+            val steer = event.values[1]
+            val drive = event.values[0]
 
             val absSteer = abs(steer)
             val absDrive = abs(drive)
 
-            // Lógica de decisión de dirección
+
             val direction = when {
                 absSteer < THRESHOLD && absDrive < THRESHOLD -> "stop"
                 absSteer > absDrive -> {
-                    // El movimiento lateral es más pronunciado
+
                     if (steer > THRESHOLD) "right" else if (steer < -THRESHOLD) "left" else "stop"
                 }
                 else -> {
-                    // El movimiento de inclinación es más pronunciado
+
                     if (drive > THRESHOLD) "forward" else if (drive < -THRESHOLD) "backward" else "stop"
                 }
             }
 
-            // Solo enviamos si hay un cambio real de estado
+
             if (direction != lastDirection) {
                 lastDirection = direction
                 mqtt.sendCommand(direction)
-                
-                // Actualización dinámica de la UI
+
                 updateMovementUI(direction)
             }
         }
