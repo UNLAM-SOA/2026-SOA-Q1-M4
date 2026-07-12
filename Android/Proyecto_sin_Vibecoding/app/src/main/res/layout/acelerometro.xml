@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    >
+
+    <!-- ================= COLUMNA 1 ================= -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_weight="2">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title=""
+            app:menu="@menu/top_menu"
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:id="@+id/leftDistanceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distancia Izq: 0 cm"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            />
+        <TextView
+            android:id="@+id/rightDistanceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distancia Der: 0 cm"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            />
+
+        <ImageView
+            android:id="@+id/ivLedStatus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Estado LED"
+            android:src="@drawable/ic_light_bulb_on_off" />
+
+    </LinearLayout>
+    <!-- ================= COLUMNA 2 ================= -->
+    <TextView
+        android:id="@+id/tvMovimiento"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="ESTADO: STOP"
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:drawableBottomCompat="@drawable/ic_infernus"
+        android:drawablePadding="8dp"
+        android:layout_weight="3"/>
+
+
+    <!-- ================= COLUMNA 3 ================= -->
+    <!-- Contenedor vertical para agrupar los botones de navegación de manera simple -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_weight="2">
+
+        <Button
+            android:id="@+id/btnControllerActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#020024"
+            android:textColor="#ebe9fc"
+            android:layout_marginBottom="8dp"
+            android:text="Activity 1" />
+
+        <Button
+            android:id="@+id/btnSensorActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#020024"
+            android:textColor="#ebe9fc"
+            android:layout_marginBottom="8dp"
+            android:text="Activity 2" />
+
+        <Button
+            android:id="@+id/btnAccelerometerActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#3a31d8"
+            android:textColor="#ebe9fc"
+            android:enabled="false"
+            android:text="Activity 3" />
+    </LinearLayout>
+
+</LinearLayout>

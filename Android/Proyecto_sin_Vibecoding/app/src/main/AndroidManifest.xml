@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity android:name=".SensorActivity" />
+        <activity
+            android:name=".AccelerometerActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"/>
 
         <activity android:name=".ControllerActivity"
             android:exported="true">

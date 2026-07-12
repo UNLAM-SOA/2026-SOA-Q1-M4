@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -56,10 +57,16 @@ class SensorActivity : AppCompatActivity(), SensorEventListener {
         }
 
         val btnController = findViewById<Button>(R.id.btnController)
+        val btnAccelerometer = findViewById<Button>(R.id.btnAccelerometer)
 
         directionText = findViewById(R.id.txtSensorOutput)
 
         btnController.setOnClickListener {
+            finish()
+        }
+
+        btnAccelerometer.setOnClickListener {
+            startActivity(Intent(this, AccelerometerActivity::class.java))
             finish()
         }
 
