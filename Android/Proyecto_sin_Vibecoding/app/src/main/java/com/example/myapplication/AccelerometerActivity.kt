@@ -35,7 +35,8 @@ class AccelerometerActivity : AppCompatActivity(), SensorEventListener {
 
     companion object {
         // Ajustamos el umbral de sensibilidad
-        private const val THRESHOLD = 3.5f 
+        private const val THRESHOLD = 3.5f
+        private const val LIGHT_THRESHOLD = 3000
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +83,7 @@ class AccelerometerActivity : AppCompatActivity(), SensorEventListener {
                     
 
                     val lightValue = state.light ?: 1000
-                    if (lightValue < 500) {
+                    if (lightValue > LIGHT_THRESHOLD) {
                         ivLedStatus.setColorFilter(Color.YELLOW) // Encendido (Oscuro)
                     } else {
                         ivLedStatus.setColorFilter(Color.GRAY) // Apagado (Luz)
@@ -102,7 +103,6 @@ class AccelerometerActivity : AppCompatActivity(), SensorEventListener {
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(this)
-        // Seguridad: Detener el vehículo al salir de la pantalla
         mqtt.sendCommand("stop")
     }
 
