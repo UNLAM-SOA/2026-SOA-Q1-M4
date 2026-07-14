@@ -69,6 +69,7 @@ class ControllerActivity : AppCompatActivity() {
         }
 
         val btnSensors = findViewById<Button>(R.id.btnSensors)
+        val btnAccelerometer = findViewById<Button>(R.id.btnAccelerometer)
         val btnForward = findViewById<Button>(R.id.btnUp)
         val btnRight = findViewById<Button>(R.id.btnRight)
         val btnStop = findViewById<Button>(R.id.btnStop)
@@ -77,6 +78,10 @@ class ControllerActivity : AppCompatActivity() {
 
         btnSensors.setOnClickListener {
             startActivity(Intent(this, SensorActivity::class.java))
+        }
+
+        btnAccelerometer.setOnClickListener {
+            startActivity(Intent(this, AccelerometerActivity::class.java))
         }
 
         btnForward.setOnClickListener { mqtt.sendCommand("forward") }
